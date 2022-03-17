@@ -10,7 +10,7 @@ public class ImportNodeTest {
 	@Test
 	void testImportNode(){
 		ClassPathXmlApplicationContext context =
-				new ClassPathXmlApplicationContext("import-beans.xml");
+				new ClassPathXmlApplicationContext("META-INF/import-beans.xml");
 		context.close();
 	}
 }

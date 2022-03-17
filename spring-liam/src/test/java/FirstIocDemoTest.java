@@ -14,7 +14,7 @@ import static org.junit.jupiter.api.Assumptions.assumeTrue;
 public class FirstIocDemoTest {
 	@Test
 	void testIoc() {
-		ClassPathXmlApplicationContext context = new ClassPathXmlApplicationContext("first-ioc.xml");
+		ClassPathXmlApplicationContext context = new ClassPathXmlApplicationContext("META-INF/first-ioc.xml");
 		PeopleBean peopleBean = context.getBean("people",PeopleBean.class);
 		String name = peopleBean.getName();
 		System.out.println(name);
@@ -23,7 +23,7 @@ public class FirstIocDemoTest {
 
 	@Test
 	void testXmlBeanFactory() {
-		XmlBeanFactory beanFactory = new XmlBeanFactory(new ClassPathResource("first-ioc.xml"));
+		XmlBeanFactory beanFactory = new XmlBeanFactory(new ClassPathResource("META-INF/first-ioc.xml"));
 		PeopleBean people = beanFactory.getBean("people",PeopleBean.class);
 		String name = people.getName();
 		System.out.println("name2:"+name);

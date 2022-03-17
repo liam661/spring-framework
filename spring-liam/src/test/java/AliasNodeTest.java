@@ -10,7 +10,7 @@ public class AliasNodeTest {
 	@Test
 	void testAlias(){
 		ClassPathXmlApplicationContext context = new
-				ClassPathXmlApplicationContext("alias-node.xml");
+				ClassPathXmlApplicationContext("META-INF/alias-node.xml");
 		Object people = context.getBean("people");
 		Object p1 = context.getBean("p1");
 		assert people.equals(p1);
