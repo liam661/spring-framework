@@ -10,7 +10,7 @@ public class BeanNodeTest {
 	@Test
 	public void testBean() {
 		ClassPathXmlApplicationContext context
-				= new ClassPathXmlApplicationContext("bean-node.xml");
+				= new ClassPathXmlApplicationContext("META-INF/bean-node.xml");
 		Object people = context.getBean("people");
 		context.close();
 	}

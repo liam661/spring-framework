@@ -4,7 +4,7 @@
 	   xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd">
 
 
-	<bean id="people" class="PeopleBean">
+	<bean id="people" class="com.liam.ioc.pojo.PeopleBean">
 		<property name="name" value="zhangsan"/>
 	</bean>
 </beans>

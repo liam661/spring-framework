@@ -1,3 +1,5 @@
+package com.liam.ioc.pojo;
+
 /**
  * @Description
  * @Author liam661

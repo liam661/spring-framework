@@ -1,3 +1,4 @@
+import com.liam.ioc.pojo.PeopleBean;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.xml.XmlBeanFactory;
 import org.springframework.context.support.ClassPathXmlApplicationContext;
