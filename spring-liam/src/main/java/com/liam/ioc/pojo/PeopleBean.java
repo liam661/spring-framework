@@ -1,5 +1,8 @@
 package com.liam.ioc.pojo;
 
+import java.util.List;
+import java.util.Map;
+
 /**
  * @Description
  * @Author liam661
@@ -7,6 +10,10 @@ package com.liam.ioc.pojo;
  **/
 public class PeopleBean {
 	private String name;
+
+	private List<String> list;
+
+	private Map<String, String> map;
 
 	public String getName() {
 		return name;
@@ -16,11 +23,19 @@ public class PeopleBean {
 		this.name = name;
 	}
 
-	public PeopleBean() {
-
+	public List<String> getList() {
+		return list;
 	}
 
-	public PeopleBean(String name) {
-		this.name = name;
+	public void setList(List<String> list) {
+		this.list = list;
+	}
+
+	public Map<String, String> getMap() {
+		return map;
+	}
+
+	public void setMap(Map<String, String> map) {
+		this.map = map;
 	}
 }

@@ -745,7 +745,9 @@ public class BeanDefinitionParserDelegate {
 		NodeList nl = beanEle.getChildNodes();
 		for (int i = 0; i < nl.getLength(); i++) {
 			Node node = nl.item(i);
+			// 是否存在property标签
 			if (isCandidateElement(node) && nodeNameEquals(node, PROPERTY_ELEMENT)) {
+				// 解析单个标签
 				parsePropertyElement((Element) node, bd);
 			}
 		}
@@ -911,10 +913,14 @@ public class BeanDefinitionParserDelegate {
 				error("Multiple 'property' definitions for property '" + propertyName + "'", ele);
 				return;
 			}
+			// 解析property标签
 			Object val = parsePropertyValue(ele, bd, propertyName);
+			// 构造properValue 对象
 			PropertyValue pv = new PropertyValue(propertyName, val);
+			// 解析元信息
 			parseMetaElements(ele, pv);
 			pv.setSource(extractSource(ele));
+			// 添加pv结构
 			bd.getPropertyValues().addPropertyValue(pv);
 		}
 		finally {
@@ -990,8 +996,9 @@ public class BeanDefinitionParserDelegate {
 				}
 			}
 		}
-
+		// ref 属性是否存在
 		boolean hasRefAttribute = ele.hasAttribute(REF_ATTRIBUTE);
+		// value 属性是否存在
 		boolean hasValueAttribute = ele.hasAttribute(VALUE_ATTRIBUTE);
 		if ((hasRefAttribute && hasValueAttribute) ||
 				((hasRefAttribute || hasValueAttribute) && subElement != null)) {
@@ -1000,15 +1007,18 @@ public class BeanDefinitionParserDelegate {
 		}
 
 		if (hasRefAttribute) {
+			// 获取ref属性值
 			String refName = ele.getAttribute(REF_ATTRIBUTE);
 			if (!StringUtils.hasText(refName)) {
 				error(elementName + " contains empty 'ref' attribute", ele);
 			}
+			// 创建连接对象
 			RuntimeBeanReference ref = new RuntimeBeanReference(refName);
 			ref.setSource(extractSource(ele));
 			return ref;
 		}
 		else if (hasValueAttribute) {
+			// 获取 value
 			TypedStringValue valueHolder = new TypedStringValue(ele.getAttribute(VALUE_ATTRIBUTE));
 			valueHolder.setSource(extractSource(ele));
 			return valueHolder;
