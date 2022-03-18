@@ -761,6 +761,7 @@ public class BeanDefinitionParserDelegate {
 		for (int i = 0; i < nl.getLength(); i++) {
 			Node node = nl.item(i);
 			if (isCandidateElement(node) && nodeNameEquals(node, QUALIFIER_ELEMENT)) {
+				// 单个解析
 				parseQualifierElement((Element) node, bd);
 			}
 		}
@@ -932,17 +933,23 @@ public class BeanDefinitionParserDelegate {
 	 * Parse a qualifier element.
 	 */
 	public void parseQualifierElement(Element ele, AbstractBeanDefinition bd) {
+		// 获取type属性
 		String typeName = ele.getAttribute(TYPE_ATTRIBUTE);
 		if (!StringUtils.hasLength(typeName)) {
 			error("Tag 'qualifier' must have a 'type' attribute", ele);
 			return;
 		}
+		// 设置阶段 处理qualifier 阶段
 		this.parseState.push(new QualifierEntry(typeName));
 		try {
+			// 自动注入对象创建
 			AutowireCandidateQualifier qualifier = new AutowireCandidateQualifier(typeName);
+			// 设置源
 			qualifier.setSource(extractSource(ele));
+			// 获取value 属性
 			String value = ele.getAttribute(VALUE_ATTRIBUTE);
 			if (StringUtils.hasLength(value)) {
+				// 设置属性，value value
 				qualifier.setAttribute(AutowireCandidateQualifier.VALUE_KEY, value);
 			}
 			NodeList nl = ele.getChildNodes();
@@ -950,11 +957,15 @@ public class BeanDefinitionParserDelegate {
 				Node node = nl.item(i);
 				if (isCandidateElement(node) && nodeNameEquals(node, QUALIFIER_ATTRIBUTE_ELEMENT)) {
 					Element attributeEle = (Element) node;
+					// 获取 key 属性
 					String attributeName = attributeEle.getAttribute(KEY_ATTRIBUTE);
+					// 获取 value 属性
 					String attributeValue = attributeEle.getAttribute(VALUE_ATTRIBUTE);
 					if (StringUtils.hasLength(attributeName) && StringUtils.hasLength(attributeValue)) {
+						// key value 属性映射
 						BeanMetadataAttribute attribute = new BeanMetadataAttribute(attributeName, attributeValue);
 						attribute.setSource(extractSource(attributeEle));
+						// 添加qualifier属性值
 						qualifier.addMetadataAttribute(attribute);
 					}
 					else {
@@ -963,9 +974,11 @@ public class BeanDefinitionParserDelegate {
 					}
 				}
 			}
+			// 添加qualifier
 			bd.addQualifier(qualifier);
 		}
 		finally {
+			// 移除阶段
 			this.parseState.pop();
 		}
 	}
