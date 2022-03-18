@@ -727,10 +727,12 @@ public class BeanDefinitionParserDelegate {
 	 * Parse constructor-arg sub-elements of the given bean element.
 	 */
 	public void parseConstructorArgElements(Element beanEle, BeanDefinition bd) {
+		// 获取
 		NodeList nl = beanEle.getChildNodes();
 		for (int i = 0; i < nl.getLength(); i++) {
 			Node node = nl.item(i);
 			if (isCandidateElement(node) && nodeNameEquals(node, CONSTRUCTOR_ARG_ELEMENT)) {
+				// 解析 construct-arg 下级标签
 				parseConstructorArgElement((Element) node, bd);
 			}
 		}
@@ -840,24 +842,32 @@ public class BeanDefinitionParserDelegate {
 				}
 				else {
 					try {
+						// 设置 阶段 构造函数处理阶段
 						this.parseState.push(new ConstructorArgumentEntry(index));
+						// 解析property标签
 						Object value = parsePropertyValue(ele, bd, null);
+						// 创建 构造函数的 属性控制类
 						ConstructorArgumentValues.ValueHolder valueHolder = new ConstructorArgumentValues.ValueHolder(value);
 						if (StringUtils.hasLength(typeAttr)) {
+							// 类型设置
 							valueHolder.setType(typeAttr);
 						}
 						if (StringUtils.hasLength(nameAttr)) {
+							// 名称设置
 							valueHolder.setName(nameAttr);
 						}
+						// 源设置
 						valueHolder.setSource(extractSource(ele));
 						if (bd.getConstructorArgumentValues().hasIndexedArgumentValue(index)) {
 							error("Ambiguous constructor-arg entries for index " + index, ele);
 						}
 						else {
+							// 添加构造函数信息
 							bd.getConstructorArgumentValues().addIndexedArgumentValue(index, valueHolder);
 						}
 					}
 					finally {
+						// 移除当前阶段
 						this.parseState.pop();
 					}
 				}
