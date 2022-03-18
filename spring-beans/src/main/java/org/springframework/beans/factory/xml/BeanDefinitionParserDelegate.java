@@ -412,28 +412,35 @@ public class BeanDefinitionParserDelegate {
 	 */
 	@Nullable
 	public BeanDefinitionHolder parseBeanDefinitionElement(Element ele, @Nullable BeanDefinition containingBean) {
+		// 获取id
 		String id = ele.getAttribute(ID_ATTRIBUTE);
+		// 获取name
 		String nameAttr = ele.getAttribute(NAME_ATTRIBUTE);
-
+		// 列表别名
 		List<String> aliases = new ArrayList<>();
+		// 是否有name属性
 		if (StringUtils.hasLength(nameAttr)) {
+			// 获取名称列表，根据`,;`进行分割
 			String[] nameArr = StringUtils.tokenizeToStringArray(nameAttr, MULTI_VALUE_ATTRIBUTE_DELIMITERS);
+			// 添加所有
 			aliases.addAll(Arrays.asList(nameArr));
 		}
 
 		String beanName = id;
 		if (!StringUtils.hasText(beanName) && !aliases.isEmpty()) {
+			// 别名的第一个设置为beanName
 			beanName = aliases.remove(0);
 			if (logger.isTraceEnabled()) {
 				logger.trace("No XML 'id' specified - using '" + beanName +
 						"' as bean name and " + aliases + " as aliases");
 			}
 		}
-
+		// bean definition 为空
 		if (containingBean == null) {
+			// 判断beanName是否被使用，bean别名是否被使用
 			checkNameUniqueness(beanName, aliases, ele);
 		}
-
+		// 处理bean标签
 		AbstractBeanDefinition beanDefinition = parseBeanDefinitionElement(ele, beanName, containingBean);
 		if (beanDefinition != null) {
 			if (!StringUtils.hasText(beanName)) {
@@ -476,18 +483,23 @@ public class BeanDefinitionParserDelegate {
 	 * within the current level of beans element nesting.
 	 */
 	protected void checkNameUniqueness(String beanName, List<String> aliases, Element beanElement) {
+		// 寻找当前的name
 		String foundName = null;
 
+		// 是否有beanName
+		// 使用过的name中是否存在
 		if (StringUtils.hasText(beanName) && this.usedNames.contains(beanName)) {
 			foundName = beanName;
 		}
 		if (foundName == null) {
+			// 寻找匹配的第一个
 			foundName = CollectionUtils.findFirstMatch(this.usedNames, aliases);
 		}
+		// 抛出异常
 		if (foundName != null) {
 			error("Bean name '" + foundName + "' is already used in this <beans> element", beanElement);
 		}
-
+		// 加入到使用队列
 		this.usedNames.add(beanName);
 		this.usedNames.addAll(aliases);
 	}
@@ -500,32 +512,42 @@ public class BeanDefinitionParserDelegate {
 	public AbstractBeanDefinition parseBeanDefinitionElement(
 			Element ele, String beanName, @Nullable BeanDefinition containingBean) {
 
+		// 设置阶段 bean定义解析阶段
 		this.parseState.push(new BeanEntry(beanName));
 
 		String className = null;
+		// 是否包含属性class
 		if (ele.hasAttribute(CLASS_ATTRIBUTE)) {
 			className = ele.getAttribute(CLASS_ATTRIBUTE).trim();
 		}
 		String parent = null;
+		// 是否包含属性parent
 		if (ele.hasAttribute(PARENT_ATTRIBUTE)) {
 			parent = ele.getAttribute(PARENT_ATTRIBUTE);
 		}
 
 		try {
+			// 创建bean definition
 			AbstractBeanDefinition bd = createBeanDefinition(className, parent);
-
+			// bean definition 属性设置
 			parseBeanDefinitionAttributes(ele, beanName, containingBean, bd);
+			// 设置描述
 			bd.setDescription(DomUtils.getChildElementValueByTagName(ele, DESCRIPTION_ELEMENT));
-
+			// 元信息设置meta标签解析
 			parseMetaElements(ele, bd);
+			// lookup-override 标签解析
 			parseLookupOverrideSubElements(ele, bd.getMethodOverrides());
+			// replace-method 标签解析
 			parseReplacedMethodSubElements(ele, bd.getMethodOverrides());
-
+			// constructor-arg 标签解析
 			parseConstructorArgElements(ele, bd);
+			// property 标签解析
 			parsePropertyElements(ele, bd);
+			// qualifier 标签解析
 			parseQualifierElements(ele, bd);
-
+			// 资源设置
 			bd.setResource(this.readerContext.getResource());
+			// source设置
 			bd.setSource(extractSource(ele));
 
 			return bd;
@@ -555,15 +577,19 @@ public class BeanDefinitionParserDelegate {
 	 */
 	public AbstractBeanDefinition parseBeanDefinitionAttributes(Element ele, String beanName,
 			@Nullable BeanDefinition containingBean, AbstractBeanDefinition bd) {
-
+		// 是否存在singleton 属性
 		if (ele.hasAttribute(SINGLETON_ATTRIBUTE)) {
 			error("Old 1.x 'singleton' attribute in use - upgrade to 'scope' declaration", ele);
 		}
+		// 是否存在scope属性
 		else if (ele.hasAttribute(SCOPE_ATTRIBUTE)) {
+			// 设置scope属性
 			bd.setScope(ele.getAttribute(SCOPE_ATTRIBUTE));
 		}
+		// bean定义是否为空
 		else if (containingBean != null) {
 			// Take default from containing bean in case of an inner bean definition.
+			// 设置bean definition 中的scope
 			bd.setScope(containingBean.getScope());
 		}
 
@@ -647,15 +673,24 @@ public class BeanDefinitionParserDelegate {
 	 * Parse the meta elements underneath the given element, if any.
 	 */
 	public void parseMetaElements(Element ele, BeanMetadataAttributeAccessor attributeAccessor) {
+		// 获取下级标签
 		NodeList nl = ele.getChildNodes();
+		// 循环子标签
 		for (int i = 0; i < nl.getLength(); i++) {
 			Node node = nl.item(i);
+			// 设置数据
+			// 是否是meta标签
 			if (isCandidateElement(node) && nodeNameEquals(node, META_ELEMENT)) {
 				Element metaElement = (Element) node;
+				// 获取key属性
 				String key = metaElement.getAttribute(KEY_ATTRIBUTE);
+				// 获取value属性
 				String value = metaElement.getAttribute(VALUE_ATTRIBUTE);
+				// 元数据对象设置
 				BeanMetadataAttribute attribute = new BeanMetadataAttribute(key, value);
+				// 设置source
 				attribute.setSource(extractSource(metaElement));
+				// 信息添加
 				attributeAccessor.addMetadataAttribute(attribute);
 			}
 		}
@@ -731,14 +766,20 @@ public class BeanDefinitionParserDelegate {
 	 * Parse lookup-override sub-elements of the given bean element.
 	 */
 	public void parseLookupOverrideSubElements(Element beanEle, MethodOverrides overrides) {
+		// 获取子标签
 		NodeList nl = beanEle.getChildNodes();
 		for (int i = 0; i < nl.getLength(); i++) {
 			Node node = nl.item(i);
+			// 是否有 lookup-method 标签
 			if (isCandidateElement(node) && nodeNameEquals(node, LOOKUP_METHOD_ELEMENT)) {
 				Element ele = (Element) node;
+				// 获取name属性
 				String methodName = ele.getAttribute(NAME_ATTRIBUTE);
+				// 获取bean属性
 				String beanRef = ele.getAttribute(BEAN_ELEMENT);
+				// 创建 覆盖依赖
 				LookupOverride override = new LookupOverride(methodName, beanRef);
+				// 设置source
 				override.setSource(extractSource(ele));
 				overrides.addOverride(override);
 			}
@@ -749,24 +790,36 @@ public class BeanDefinitionParserDelegate {
 	 * Parse replaced-method sub-elements of the given bean element.
 	 */
 	public void parseReplacedMethodSubElements(Element beanEle, MethodOverrides overrides) {
+		// 子节点获取
 		NodeList nl = beanEle.getChildNodes();
 		for (int i = 0; i < nl.getLength(); i++) {
 			Node node = nl.item(i);
+			// 是否包含 replace-method标签
 			if (isCandidateElement(node) && nodeNameEquals(node, REPLACED_METHOD_ELEMENT)) {
 				Element replacedMethodEle = (Element) node;
+				// 获取name属性
 				String name = replacedMethodEle.getAttribute(NAME_ATTRIBUTE);
+				// 获取replacer
 				String callback = replacedMethodEle.getAttribute(REPLACER_ATTRIBUTE);
+				// 对象组装
 				ReplaceOverride replaceOverride = new ReplaceOverride(name, callback);
 				// Look for arg-type match elements.
+				// 子节点属性
+				// 处理 arg-type属性
 				List<Element> argTypeEles = DomUtils.getChildElementsByTagName(replacedMethodEle, ARG_TYPE_ELEMENT);
 				for (Element argTypeEle : argTypeEles) {
+					// 获取match数据值
 					String match = argTypeEle.getAttribute(ARG_TYPE_MATCH_ATTRIBUTE);
+					// match 信息设置
 					match = (StringUtils.hasText(match) ? match : DomUtils.getTextValue(argTypeEle));
 					if (StringUtils.hasText(match)) {
+						// 添加类型标识
 						replaceOverride.addTypeIdentifier(match);
 					}
 				}
+				// 设置source
 				replaceOverride.setSource(extractSource(replacedMethodEle));
+				// 重载列表添加
 				overrides.addOverride(replaceOverride);
 			}
 		}
