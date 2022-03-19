@@ -11,9 +11,13 @@ import java.util.Map;
 public class PeopleBean {
 	private String name;
 
-	private List<String> list;
+	public PeopleBean(String name) {
+		this.name = name;
+	}
 
-	private Map<String, String> map;
+	/*private List<String> list;
+
+	private Map<String, String> map;*/
 
 	public String getName() {
 		return name;
@@ -23,7 +27,7 @@ public class PeopleBean {
 		this.name = name;
 	}
 
-	public List<String> getList() {
+	/*public List<String> getList() {
 		return list;
 	}
 
@@ -37,5 +41,5 @@ public class PeopleBean {
 
 	public void setMap(Map<String, String> map) {
 		this.map = map;
-	}
+	}*/
 }
